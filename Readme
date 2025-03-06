@@ -1,0 +1,7 @@
+Structure globale du projet:
+
+DOSSIERS: Readline (lecture depuis le terminal), parsing, et execution. 
+
+HEADERS: Un fichier header global "minishell.h" qui contient toutes les librairies des fonctions externes ainsi que des headers locaux pour chaque dossier. Ces headers locaux contiennent les fonctions propres a chaque partie (readline, parsing et exec).
+
+MAKEFILE TEST: Makefile permettant de compiler et d'executer des fichiers de tests a appeler dans le main situe dans /tests/. Header propre: "minitest.h".
