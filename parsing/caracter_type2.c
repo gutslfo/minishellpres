@@ -6,7 +6,7 @@
 /*   By: pitran <pitran@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/06 11:57:10 by pitran            #+#    #+#             */
-/*   Updated: 2025/03/06 12:10:16 by pitran           ###   ########.fr       */
+/*   Updated: 2025/03/07 16:09:14 by pitran           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ int	is_parenthesis(char c)
 
 int	is_special_caracter(char c)
 {
-	if (c == '$' || c == '\\' || c == '#' || c == '\n')
+	if (c == '$' || c == '\\' || c == '#' || c == '\n' || c == '\0')
 		return (1);
 	return (0);
 }

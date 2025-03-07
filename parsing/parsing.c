@@ -6,12 +6,12 @@
 /*   By: pitran <pitran@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/06 14:30:41 by pitran            #+#    #+#             */
-/*   Updated: 2025/03/06 14:35:46 by pitran           ###   ########.fr       */
+/*   Updated: 2025/03/07 16:13:17 by pitran           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-
+/*
 void    parse_input(char *command)
 {
     t_token **token_list;
@@ -20,3 +20,4 @@ void    parse_input(char *command)
     //run_ast(token_list)
     //
 }
+*/
