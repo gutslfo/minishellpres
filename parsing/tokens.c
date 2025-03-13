@@ -6,7 +6,7 @@
 /*   By: pitran <pitran@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/06 11:59:05 by pitran            #+#    #+#             */
-/*   Updated: 2025/03/13 17:16:27 by pitran           ###   ########.fr       */
+/*   Updated: 2025/03/13 18:16:08 by pitran           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,4 +44,28 @@ void	link_token(t_token *token, t_token **token_list)
 		current = current->next;
 	current->next = token;
 	token->prev = current;
+}
+
+void	free_token(t_token *token)
+{
+	free(token->type);
+	token->type = 0;
+	free(token->content);
+	token->content = NULL;
+	token->next = NULL;
+	token->prev = NULL;
+	free(token);
+	token = NULL;
+}
+
+void	free_token_list(t_token **token_list)
+{
+	t_token	*current;
+
+	current = *token_list;
+	while (current)
+	{
+		free_token(current);
+		current = current->next;
+	}
 }

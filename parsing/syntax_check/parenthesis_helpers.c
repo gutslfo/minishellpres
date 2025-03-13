@@ -6,7 +6,7 @@
 /*   By: pitran <pitran@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 15:40:32 by pitran            #+#    #+#             */
-/*   Updated: 2025/03/13 17:59:22 by pitran           ###   ########.fr       */
+/*   Updated: 2025/03/13 18:12:01 by pitran           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,10 +46,6 @@ t_parenthesis	**assign_paren_struct(t_token **token_list)
 	t_parenthesis	**parenthesis_list;
 	t_token			*current;
 
-	parenthesis_list = malloc(sizeof(t_token *));
-	if (!parenthesis_list)
-		return (NULL);
-	*parenthesis_list = NULL;
 	current = *token_list;
 	while (current)
 	{

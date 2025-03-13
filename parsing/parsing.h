@@ -6,7 +6,7 @@
 /*   By: pitran <pitran@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 17:20:14 by pitran            #+#    #+#             */
-/*   Updated: 2025/03/13 17:33:30 by pitran           ###   ########.fr       */
+/*   Updated: 2025/03/13 18:17:00 by pitran           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,8 +90,10 @@ void             define_double_redirection(char **command, t_token *token,
 void             define_bonus_operator(char **command, t_token *token, int *len);
 
 /* Tokens */
-t_token          *create_token(void);
-void             link_token(t_token *token, t_token **token_list);
+t_token			*create_token(void);
+void			link_token(t_token *token, t_token **token_list);
+void			free_token(t_token *token);
+void			free_token_list(t_token **token_list);
 
 /* Characters */
 int              is_space(char c);
