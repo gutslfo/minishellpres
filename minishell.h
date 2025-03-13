@@ -7,9 +7,11 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 //Local header files
 #include "parsing/parsing.h"
 #include "tests/minitest.h"
+
 
 #endif 

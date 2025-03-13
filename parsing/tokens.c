@@ -6,15 +6,17 @@
 /*   By: pitran <pitran@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/06 11:59:05 by pitran            #+#    #+#             */
-/*   Updated: 2025/03/07 16:13:41 by pitran           ###   ########.fr       */
+/*   Updated: 2025/03/13 17:16:27 by pitran           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
 //Token allocation and initialisation
-t_token	*create_token(t_token *new_token)
+t_token	*create_token(void)
 {
+	t_token	*new_token;
+
 	new_token = malloc(sizeof(t_token));
 	if (!new_token)
 		return (NULL);
@@ -26,14 +28,20 @@ t_token	*create_token(t_token *new_token)
 }
 
 //Link node 
-t_token	**link_token(t_token *token, t_token **token_list)
+void	link_token(t_token *token, t_token **token_list)
 {
 	t_token	*current;
 
+	if (!token || !token_list)
+		return ;
+	if (!*token_list)
+	{
+		*token_list = token;
+		return ;
+	}
 	current = *token_list;
-	while (current && current->next)
+	while (current->next)
 		current = current->next;
 	current->next = token;
 	token->prev = current;
-	return (token_list);
 }

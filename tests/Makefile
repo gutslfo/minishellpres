@@ -3,7 +3,8 @@ CC = cc
 CFLAGS = -Wall -Wextra -Werror -g
 LFLAGS = -lreadline -lncurses
 
-SRCS = split.c main.c
+SRCS = main.c\
+		token_tests.c\
 OBJS = $(SRCS:.c=.o)
 
 MINISHELL_DIR = ../

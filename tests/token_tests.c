@@ -1,27 +1,34 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   caracter_type2.c                                   :+:      :+:    :+:   */
+/*   token_tests.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: pitran <pitran@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/06 11:57:10 by pitran            #+#    #+#             */
-/*   Updated: 2025/03/13 17:18:49 by pitran           ###   ########.fr       */
+/*   Created: 2025/03/12 14:40:34 by pitran            #+#    #+#             */
+/*   Updated: 2025/03/12 15:31:57 by pitran           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-int	is_parenthesis(char c)
+void    test_tokenize_input()
 {
-	if (c == '(' || c == ')')
-		return (1);
-	return (0);
-}
+    printf("TOKENIZE INPUT\n\n");
+    t_token **test_list;
+    
+    char    *word_test = "echo";
+    
+    test_list = tokenize_input(word_test);
 
-int	is_special_caracter(char c)
-{
-	if (c == '$' || c == '\\' || c == '#' || c == '\n' || c == '\0')
-		return (1);
-	return (0);
+    t_token *current;
+    
+    current = *test_list;
+
+    while (current)
+    {
+        printf("Token type: %d\n", current->type);
+        printf("Token content: %s\n", current->content);
+        current = current->next;
+    }
 }

@@ -6,81 +6,90 @@
 /*   By: pitran <pitran@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/06 12:00:23 by pitran            #+#    #+#             */
-/*   Updated: 2025/03/07 16:20:48 by pitran           ###   ########.fr       */
+/*   Updated: 2025/03/13 17:51:06 by pitran           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
+//Token type assignment
+t_token_type	get_token_type(char c)
+{
+	if (is_command_char(c))
+		return (WORD);
+	else if (is_quote(c))
+		return (QUOTE);
+	else if (is_redirection(c))
+		return (REDIR);
+	else if (is_operator(c))
+		return (OPERATOR);
+	else if (is_parenthesis(c))
+		return (PARENTHESIS);
+	else if (is_special_caracter(c))
+		return (SPECIAL_CARACTER);
+	return (DEFAULT);
+}
 
-t_token    **tokenize_input(char *command)
+//Token list management 
+t_token	**tokenize_input(char *command)
 {
 	t_token		**token_list;
-	token_type	type;
+	t_token		**result;
+	t_token_type	type;
 
-	token_list = NULL;
-	type = DEFAULT;
+	token_list = malloc(sizeof(t_token *));
+	if (!token_list)
+		return (NULL);
+	*token_list = NULL;
 	while (*command)
 	{
-		if (is_command_char(*command))
-			type = WORD;
-		else if (is_quote(*command))
-			type = QUOTE;
-		else if (is_redirection(*command))
-			type = REDIR;
-		else if (is_operator(*command))
-			type = OPERATOR;
-		else if (is_parenthesis(*command))
-			type = PARENTHESIS;
-		else if (is_special_caracter(*command))
-			type = SPECIAL_CARACTER;
-		command = extract_token(command, type, token_list);
+		type = get_token_type(*command);
+		if (type == DEFAULT)
+		{
+			command++;
+			continue ;
+		}
+		result = extract_token(&command, type, token_list);
+		if (!result)
+		{
+			free(token_list);
+			return (NULL);
+		}
+		token_list = result;
 	}
 	return (token_list);
 }
 
-char	*extract_token(char *command, token_type type, t_token **token_list)
+//Token malloc + link
+t_token	**extract_token(char **command, t_token_type type, t_token **token_list)
 {
-	char *pointer;
-	t_token *new_token;
-	
+	t_token	*new_token;
+
 	if (!*(command) || !command || type == DEFAULT)
 		return (NULL);
-	new_token = NULL;
-	new_token = create_token(new_token);
+	new_token = create_token();
 	if (!new_token)
-		return (NULL);//Message d'erreur
-	pointer = handle_token_type(command, type, new_token);
-	link_token(new_token, token_list);
-	return (pointer);
+		return (token_list);//Message d'erreur
+	new_token = handle_token_type(command, type, new_token);
+	if (new_token)
+		link_token(new_token, token_list);//If/ else avec free 
+	return (token_list);
 }
 
-char	*handle_token_type(char *command, token_type type, t_token *new_token)
+//Mother function to call type handlers
+t_token	*handle_token_type(char **command, t_token_type type, t_token *new_token)
 {
-	char *pointer;
-	switch (type)
-	{
-		case WORD:
-		pointer = tokenize_word(command, new_token);
-		break;
-		case QUOTE:
-		pointer = tokenize_quote(command, new_token);
-		break;
-		case REDIR:
-		pointer = tokenize_redir(command, new_token);
-		break;
-		case OPERATOR: 
-		pointer = tokenize_operator(command, new_token);
-		break;
-		case PARENTHESIS:
-		pointer = tokenize_parenthesis(command, new_token);
-		break;
-		case SPECIAL_CARACTER:
-		pointer = tokenize_special_caracter(command, new_token);
-		break;
-		default:
-		break;
-	}
-	return (pointer);
+	if (type == WORD)
+		new_token = tokenize_word(command, new_token);
+	else if (type == QUOTE)
+		new_token = tokenize_quote(command, new_token);
+	else if (type == REDIR)
+		new_token = tokenize_redir(command, new_token);
+	else if (type == OPERATOR)
+		new_token = tokenize_operator(command, new_token);
+	else if (type == PARENTHESIS)
+		new_token = tokenize_parenthesis(command, new_token);
+	else if (type == SPECIAL_CARACTER)
+		new_token = tokenize_special_caracter(command, new_token);
+	return (new_token);
 }
-

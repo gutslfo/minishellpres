@@ -6,13 +6,13 @@
 /*   By: pitran <pitran@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/06 11:58:57 by pitran            #+#    #+#             */
-/*   Updated: 2025/03/06 12:09:32 by pitran           ###   ########.fr       */
+/*   Updated: 2025/03/13 17:17:20 by pitran           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-int is_space(char c)
+int	is_space(char c)
 {
 	if ((c >= 9 && c <= 12) || (c == 32))
 		return (1);
@@ -28,7 +28,7 @@ int	is_quote(char c)
 
 int	is_redirection(char c)
 {
-	if ((c == '>')|| (c == '<'))
+	if ((c == '>') || (c == '<'))
 		return (1);
 	return (0);
 }
@@ -44,7 +44,7 @@ int	is_command_char(char c)
 {
 	if (c >= 'a' && c <= 'z')
 		return (1);
-	else if (c >= 'A' && c<= 'Z')
+	else if (c >= 'A' && c <= 'Z')
 		return (1);
 	else if (c >= '0' && c <= '9')
 		return (1);

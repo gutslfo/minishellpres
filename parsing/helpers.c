@@ -6,13 +6,13 @@
 /*   By: pitran <pitran@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/06 11:59:12 by pitran            #+#    #+#             */
-/*   Updated: 2025/03/07 15:37:45 by pitran           ###   ########.fr       */
+/*   Updated: 2025/03/13 17:08:48 by pitran           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-int find_word_len(char *content)
+int	find_word_len(char *content)
 {
 	int	i;
 
@@ -21,4 +21,3 @@ int find_word_len(char *content)
 		i++;
 	return (i);
 }
-
