@@ -6,7 +6,7 @@
 /*   By: pitran <pitran@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 17:20:14 by pitran            #+#    #+#             */
-/*   Updated: 2025/03/13 18:17:00 by pitran           ###   ########.fr       */
+/*   Updated: 2025/03/19 17:15:37 by pitran           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,39 +34,30 @@ typedef enum
 	PIPE = 12,      /* | */
 	AND = 13,       /* && */
 	OR = 14,        /* || */
-	SEMICOLON = 15, /* ; */
 	
-	PARENTHESIS = 16,  /* Generic parenthesis */
-	PAREN_OPEN = 17,   /* ( */
-	PAREN_CLOSE = 18,  /* ) */
+	PARENTHESIS = 15,  /* Generic parenthesis */
+	PAREN_OPEN = 16,   /* ( */
+	PAREN_CLOSE = 17,  /* ) */
 	
-	SPECIAL_CARACTER = 19, /* Special characters */
-	ENV_VAR = 20,         /* $VAR */
-	EXIT_STATUS = 21,     /* $? */
-	ESCAPE = 22,          /* \ (backslash) */
-	COMMENT = 23,         /* # */
-	T_NEWLINE = 24,       /* End of command */
-	T_EOF = 25,           /* End of input */
+	SPECIAL_CARACTER = 18, /* Special characters */
+	ENV_VAR = 19,         /* $VAR */
+	EXIT_STATUS = 20,     /* $? */
+	ESCAPE = 21,          /* \ (backslash) */
+	COMMENT = 22,         /* # */
+	T_NEWLINE = 23,       /* End of command */
+	T_EOF = 24,           /* End of input */
 	
-	UNKNOWN = 26     /* Error handling */
+	UNKNOWN = 25     /* Error handling */
 }	t_token_type;
 
 /* Token structure */
 typedef struct s_token
 {
-	t_token_type    type;
-	char            *content;
-	struct s_token  *next;
-	struct s_token  *prev;
+	t_token_type	type;
+	char			*content;
+	struct s_token	*next;
+	struct s_token	*prev;
 }	t_token;
-
-/* Parenthesis check structure */
-typedef struct s_parenthesis
-{
-	t_token               *token;
-	bool                  found;
-	struct s_parenthesis  *next;
-}	t_parenthesis;
 
 /* I-TOKENIZATION */
 
@@ -112,16 +103,10 @@ int              find_word_len(char *content);
 /* 1) PARENTHESIS */
 /* Parenthesis check */
 int              paren_syntax_is_valid(t_token **token_list);
-int              no_empty_parenthesis(t_token **token_list);
-int              even_parenthesis(t_token **token_list);
-int              logical_parenthesis_distribution(t_token **token_list);
-int              valid_parenthesis_groups(t_token **token_list);
-
-/* Parenthesis helpers */
-void             create_paren_struct(t_token *token);
-void             link_paren_struct(t_parenthesis *new_parenthesis, 
-				t_parenthesis **parenthesis_list);
-t_parenthesis    **assign_paren_struct(t_token **token_list);
-void             find_parenthesis_list(t_parenthesis **parenthesis_list);
+int				count_tokens(t_token **token_list);
+int				check_token(t_token *cur, t_token **stack, int *top);
+int				quote_syntax_is_valid(t_token **token_list);
+int				redir_syntax_is_valid(t_token **token_list);
+int				pipe_syntax_is_valid(t_token **token_list);
 
 #endif

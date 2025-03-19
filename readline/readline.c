@@ -6,7 +6,7 @@
 /*   By: pitran <pitran@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/06 12:00:43 by pitran            #+#    #+#             */
-/*   Updated: 2025/03/13 16:13:03 by pitran           ###   ########.fr       */
+/*   Updated: 2025/03/19 17:13:23 by pitran           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ int main()
     printf("TOKENIZE INPUT TEST\n\n");
     t_token **test_list;
     
-    char *word_test = "echo {echo}";
+    char *word_test = "(i (skfjsflkjv | >> \'am\' \"a\" parenthesis)";
     
     printf("DEBUG: Calling tokenize_input with '%s'\n", word_test);
     test_list = tokenize_input(word_test);
@@ -45,19 +45,14 @@ int main()
         current = current->next;
     }
     
-    printf("DEBUG: Processed %d tokens successfully\n", token_count);
-    
-    // Free the tokens (you should implement a clean function for this)
-    current = *test_list;
-    while (current) {
-        t_token *to_free = current;
-        current = current->next;
-        free(to_free->content);
-        free(to_free);
-    }
-    
-    free(test_list);
-    return 0;
+    if(paren_syntax_is_valid(test_list))
+        printf("Valid paren syntax\n");
+    if (quote_syntax_is_valid(test_list))
+        printf("Valid quote syntax\n"); 
+    if (redir_syntax_is_valid(test_list))
+        printf("Redir syntax valid\n");
+    if (pipe_syntax_is_valid(test_list))
+        printf("Pipe syntax is valid\n");
 }
 
 /*

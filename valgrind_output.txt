@@ -1,0 +1,67 @@
+==244276== Memcheck, a memory error detector
+==244276== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==244276== Using Valgrind-3.18.1 and LibVEX; rerun with -h for copyright info
+==244276== Command: ./minishell
+==244276== Parent PID: 221010
+==244276== 
+==244276== Conditional jump or move depends on uninitialised value(s)
+==244276==    at 0x10A258: link_paren_struct (parenthesis_helpers.c:35)
+==244276==    by 0x10A2F7: assign_paren_struct (parenthesis_helpers.c:57)
+==244276==    by 0x10A157: valid_parenthesis_groups (parenthesis_check.c:93)
+==244276==    by 0x10A5C0: main (readline.c:55)
+==244276==  Uninitialised value was created by a heap allocation
+==244276==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==244276==    by 0x10A12F: valid_parenthesis_groups (parenthesis_check.c:90)
+==244276==    by 0x10A5C0: main (readline.c:55)
+==244276== 
+==244276== 
+==244276== HEAP SUMMARY:
+==244276==     in use at exit: 379 bytes in 20 blocks
+==244276==   total heap usage: 23 allocs, 3 frees, 1,419 bytes allocated
+==244276== 
+==244276== 8 bytes in 4 blocks are indirectly lost in loss record 1 of 5
+==244276==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==244276==    by 0x109C55: tokenize_parenthesis (tokenize.c:116)
+==244276==    by 0x10976F: handle_token_type (retrieve.c:91)
+==244276==    by 0x10969C: extract_token (retrieve.c:73)
+==244276==    by 0x109603: tokenize_input (retrieve.c:52)
+==244276==    by 0x10A46B: main (readline.c:23)
+==244276== 
+==244276== 19 bytes in 4 blocks are indirectly lost in loss record 2 of 5
+==244276==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==244276==    by 0x1097D8: tokenize_word (tokenize.c:22)
+==244276==    by 0x1096F0: handle_token_type (retrieve.c:83)
+==244276==    by 0x10969C: extract_token (retrieve.c:73)
+==244276==    by 0x109603: tokenize_input (retrieve.c:52)
+==244276==    by 0x10A46B: main (readline.c:23)
+==244276== 
+==244276== 72 bytes in 3 blocks are indirectly lost in loss record 3 of 5
+==244276==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==244276==    by 0x10A1F0: create_paren_struct (parenthesis_helpers.c:19)
+==244276==    by 0x10A2E0: assign_paren_struct (parenthesis_helpers.c:56)
+==244276==    by 0x10A157: valid_parenthesis_groups (parenthesis_check.c:93)
+==244276==    by 0x10A5C0: main (readline.c:55)
+==244276== 
+==244276== 256 bytes in 8 blocks are indirectly lost in loss record 4 of 5
+==244276==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==244276==    by 0x10938C: create_token (tokens.c:20)
+==244276==    by 0x109676: extract_token (retrieve.c:70)
+==244276==    by 0x109603: tokenize_input (retrieve.c:52)
+==244276==    by 0x10A46B: main (readline.c:23)
+==244276== 
+==244276== 379 (24 direct, 355 indirect) bytes in 1 blocks are definitely lost in loss record 5 of 5
+==244276==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==244276==    by 0x10A1F0: create_paren_struct (parenthesis_helpers.c:19)
+==244276==    by 0x10A2E0: assign_paren_struct (parenthesis_helpers.c:56)
+==244276==    by 0x10A157: valid_parenthesis_groups (parenthesis_check.c:93)
+==244276==    by 0x10A5C0: main (readline.c:55)
+==244276== 
+==244276== LEAK SUMMARY:
+==244276==    definitely lost: 24 bytes in 1 blocks
+==244276==    indirectly lost: 355 bytes in 19 blocks
+==244276==      possibly lost: 0 bytes in 0 blocks
+==244276==    still reachable: 0 bytes in 0 blocks
+==244276==         suppressed: 0 bytes in 0 blocks
+==244276== 
+==244276== For lists of detected and suppressed errors, rerun with: -s
+==244276== ERROR SUMMARY: 2 errors from 2 contexts (suppressed: 0 from 0)
