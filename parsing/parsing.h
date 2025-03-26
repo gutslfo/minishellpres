@@ -6,7 +6,7 @@
 /*   By: pitran <pitran@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 17:20:14 by pitran            #+#    #+#             */
-/*   Updated: 2025/03/19 17:15:37 by pitran           ###   ########.fr       */
+/*   Updated: 2025/03/26 15:43:00 by pitran           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,12 +101,20 @@ int              find_word_len(char *content);
 /* II-SYNTAX CHECK */
 
 /* 1) PARENTHESIS */
-/* Parenthesis check */
+/* Specific syntax checks by type */
 int              paren_syntax_is_valid(t_token **token_list);
 int				count_tokens(t_token **token_list);
 int				check_token(t_token *cur, t_token **stack, int *top);
+int              paren_syntax_is_valid(t_token **token_list);
 int				quote_syntax_is_valid(t_token **token_list);
 int				redir_syntax_is_valid(t_token **token_list);
-int				pipe_syntax_is_valid(t_token **token_list);
+int				operator_syntax_is_valid(t_token **token_list);
+/*Overall syntax check*/
+int				syntax_is_valid(t_token **token_list);
 
+/* III-PARSE*/
+/*Read */
+char			*read_command();
+void			parse_input();
+void			print_token_list(t_token **token_list);
 #endif
