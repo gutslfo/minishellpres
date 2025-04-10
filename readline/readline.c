@@ -6,54 +6,27 @@
 /*   By: pitran <pitran@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/06 12:00:43 by pitran            #+#    #+#             */
-/*   Updated: 2025/03/26 15:44:27 by pitran           ###   ########.fr       */
+/*   Updated: 2025/03/26 16:01:56 by pitran           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-char    *read_command()
-{
-    char *command;
-
-    while (1)
-    {
-        command = readline ("Minishell >");
-        if (command)
-            add_history(command);
-        else
-            break;
-    }
-    return (command);
-}
-
-int main()
-{
-    parse_input();
-
-}
-
-/*
 int main(void)
 {
-	char    *command;
+	char *command;
 
 	while (1)
 	{
-		command = readline("Minishell > ");
-		if (command)
-			add_history(command);
-		else
+		command = readline("Petit coquillage > ");
+		if (!command)
 			break;
-		//execute_command(command);
+		if (*command)
+		{
+			add_history(command);
+			parse_input(command);
+		}
+		free(command);
 	}
+	return (0);
 }
-
-
-MAIN
-
-int main()
-{
-	parse_input(command)
-	execute
-}*/

@@ -6,7 +6,7 @@
 /*   By: pitran <pitran@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 17:20:14 by pitran            #+#    #+#             */
-/*   Updated: 2025/03/26 15:43:00 by pitran           ###   ########.fr       */
+/*   Updated: 2025/04/10 14:00:46 by pitran           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,6 +58,33 @@ typedef struct s_token
 	struct s_token	*next;
 	struct s_token	*prev;
 }	t_token;
+
+/* AST Node Typology */
+typedef enum
+{
+    AST_COMMAND = 1,    /* Simple command with args and redirections */
+    AST_PIPE = 2,       /* Pipe operator | */
+    AST_AND = 3,        /* AND operator && */
+    AST_OR = 4,         /* OR operator || */
+    AST_SUBSHELL = 5    /* Commands in parentheses () */
+} t_ast_type;
+
+/* AST Node Structure */
+typedef struct s_ast_node
+{
+    t_ast_type          type;           /* Type of node (command, operator, etc.) */
+    char                **args;         /* For command nodes: command and arguments */
+    t_token             **redirs;       /* Array of redirection tokens */
+    int                 redirs_count;   /* Count of redirections */
+    struct s_ast_node   *left;          /* Left child (or NULL) */
+    struct s_ast_node   *right;         /* Right child (or NULL) */
+} t_ast_node;
+
+/* AST construction functions */
+t_ast_node  *create_ast(t_token **token_list);
+t_ast_node  *create_ast_node(t_ast_type type);
+void        free_ast_node(t_ast_node *node);
+void        print_ast(t_ast_node *node, int depth);
 
 /* I-TOKENIZATION */
 
@@ -112,9 +139,17 @@ int				operator_syntax_is_valid(t_token **token_list);
 /*Overall syntax check*/
 int				syntax_is_valid(t_token **token_list);
 
+/* III- AST */
+/* 1) AST construction functions */
+t_ast_node  *create_ast(t_token **token_list);
+t_ast_node  *create_ast_node(t_ast_type type);
+void        free_ast_node(t_ast_node *node);
+void        print_ast(t_ast_node *node, int depth);
+
 /* III-PARSE*/
 /*Read */
-char			*read_command();
-void			parse_input();
+int				parse_input(char *command);
 void			print_token_list(t_token **token_list);
+
+
 #endif
