@@ -5,12 +5,13 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: pitran <pitran@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/09 12:00:00 by username          #+#    #+#             */
-/*   Updated: 2025/05/14 13:26:17 by pitran           ###   ########.fr       */
+/*   Created: 2025/05/09 12:00:00 by pitran            #+#    #+#             */
+/*   Updated: 2025/05/14 16:22:00 by pitran           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../minishell.h"
+#include <string.h> /* Pour strdup */
 
 int	is_redirection_token(t_token_type type)
 {
@@ -21,14 +22,14 @@ int	is_redirection_token(t_token_type type)
 t_redir_type	token_to_redir_type(t_token_type type)
 {
 	if (type == REDIR_IN)
-		return (REDIR_IN);
+		return (REDIR_TYPE_IN);
 	else if (type == REDIR_OUT)
-		return (REDIR_OUT);
+		return (REDIR_TYPE_OUT);
 	else if (type == REDIR_APPEND)
-		return (REDIR_APPEND);
+		return (REDIR_TYPE_APPEND);
 	else if (type == HEREDOC)
-		return (REDIR_HEREDOC);
-	return (REDIR_IN);
+		return (REDIR_TYPE_HEREDOC);
+	return (REDIR_TYPE_IN);
 }
 
 int	count_args(t_token **tokens, int start, int end)
@@ -66,7 +67,7 @@ char	**extract_args(t_token **tokens, int start, int end)
 	{
 		if (tokens[i]->type == WORD)
 		{
-			args[arg_idx] = ft_strdup(tokens[i]->content);
+			args[arg_idx] = strdup(tokens[i]->content);
 			arg_idx++;
 		}
 		else if (is_redirection_token(tokens[i]->type))
@@ -90,7 +91,7 @@ void	extract_redirections(t_ast_node *node, t_token **tokens,
 			&& tokens[i + 1]->type == WORD)
 		{
 			redir = create_redirection(token_to_redir_type(tokens[i]->type),
-					ft_strdup(tokens[i + 1]->content));
+					strdup(tokens[i + 1]->content));
 			if (redir)
 				add_redirection(node, redir);
 			i++;

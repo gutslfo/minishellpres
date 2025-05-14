@@ -1,3 +1,15 @@
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    Makefile                                           :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: pitran <pitran@student.42.fr>              +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2025/03/06 11:50:43 by pitran            #+#    #+#              #
+#    Updated: 2025/05/14 16:42:35 by pitran           ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
+
 NAME = minishell
 
 CC = cc
@@ -6,33 +18,69 @@ LFLAGS = -lreadline -lncurses
 
 UNAME_S := $(shell uname -s)
 
-SRCS := $(shell find . -name "*.c" ! -path "./tests/*")
+# Source directories
+SRC_DIR = .
+PARSING_DIR = parsing
+SYNTAX_DIR = $(PARSING_DIR)/syntax_check
+AST_DIR = $(PARSING_DIR)/ast
+EXEC_DIR = execution
+BUILTIN_DIR = builtins
 
+# Source files
+SRC_MAIN = readline/readline.c
+
+SRC_PARSING = $(PARSING_DIR)/retrieve.c \
+			  $(PARSING_DIR)/helpers.c \
+			  $(PARSING_DIR)/caracter_type.c \
+			  $(PARSING_DIR)/caracter_type2.c \
+			  $(PARSING_DIR)/tokenize.c \
+			  $(PARSING_DIR)/tokenize2.c \
+			  $(PARSING_DIR)/tokens.c \
+			  $(PARSING_DIR)/parse.c \
+			  $(PARSING_DIR)/parsing.c
+
+SRC_SYNTAX = $(SYNTAX_DIR)/syntax_check.c \
+			 $(SYNTAX_DIR)/other_type_check.c \
+			 $(SYNTAX_DIR)/parenthesis_check.c
+
+SRC_AST = $(AST_DIR)/ast_builder.c \
+		  $(AST_DIR)/parsing.c \
+		  $(AST_DIR)/nodes.c \
+		  $(AST_DIR)/simple_command.c \
+		  $(AST_DIR)/utils.c \
+
+# Combine all sources
+SRCS = $(SRC_MAIN) $(SRC_PARSING) $(SRC_SYNTAX) $(SRC_AST)
+
+# Object files
 OBJS = $(SRCS:.c=.o)
 
-all: $(NAME)
+# Include directories
+INCLUDES = -I.
 
-libminishell.a : $(OBJS)
-	ar rcs $@ $(OBJS)
+# Define rules
+all: $(NAME)
 
 $(NAME): $(OBJS)
 	$(CC) $(OBJS) $(LFLAGS) -o $(NAME)
 
 %.o: %.c
-	$(CC) $(CFLAGS) $(LFLAGS) $(INCLUDES) -c $< -o $@
+	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 clean:
-	rm -f $(OBJS) 
+	rm -f $(OBJS)
 
 fclean: clean
 	rm -f $(NAME)
 
 re: fclean all
 
-%.o: %.c
-	$(CC) $(CFLAGS) $(LFLAGS) $(INCLUDES) -c $< -o $@
+# Library for testing
+libminishell.a: $(OBJS)
+	ar rcs $@ $(OBJS)
 
-valgrind:
+# Debugging tools
+valgrind: $(NAME)
 	valgrind --leak-check=full \
 			--show-leak-kinds=all \
 			--track-origins=yes \
@@ -40,3 +88,7 @@ valgrind:
 			--log-file=valgrind-out.txt \
 			./$(NAME)
 
+# Directory creation if needed
+$(shell mkdir -p $(PARSING_DIR) $(SYNTAX_DIR) $(AST_DIR) $(EXEC_DIR) $(BUILTIN_DIR))
+
+.PHONY: all clean fclean re valgrind

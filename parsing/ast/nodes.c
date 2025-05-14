@@ -6,7 +6,7 @@
 /*   By: pitran <pitran@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/09 15:34:09 by pitran            #+#    #+#             */
-/*   Updated: 2025/05/14 13:13:25 by pitran           ###   ########.fr       */
+/*   Updated: 2025/05/14 15:19:02 by pitran           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,15 +19,16 @@ t_ast_node	*create_command_node(char **args)
 	node = (t_ast_node *)malloc(sizeof(t_ast_node));
 	if (!node)
 		return (NULL);
-	node->type = NODE_COMMAND;
+	node->type = AST_COMMAND;
 	node->data.command.args = args;
-	node->data.command.redirections = NULL;                                                                            
+	node->data.command.redirections = NULL;
 	return (node);
 }
 
-t_ast_node	*create_operator_node(t_node_type type, t_ast_node *left, t_ast_node *right)
+t_ast_node	*create_operator_node(t_ast_type type, t_ast_node *left,
+		t_ast_node *right)
 {
-	t_ast_node *node;
+	t_ast_node	*node;
 
 	node = (t_ast_node *)malloc(sizeof(t_ast_node));
 	if (!node)
@@ -45,7 +46,7 @@ t_ast_node	*create_subshell_node(t_ast_node *child)
 	node = (t_ast_node *)malloc(sizeof(t_ast_node));
 	if (!node)
 		return (NULL);
-	node->type = NODE_SUBSHELL;
+	node->type = AST_SUBSHELL;
 	node->data.subshell.child = child;
 	return (node);
 }
@@ -67,7 +68,7 @@ void	add_redirection(t_ast_node *cmd_node, t_redirection *redir)
 {
 	t_redirection	*current;
 
-	if (!cmd_node || !redir || cmd_node->type != NODE_COMMAND)
+	if (!cmd_node || !redir || cmd_node->type != AST_COMMAND)
 		return ;
 	if (!cmd_node->data.command.redirections)
 	{
