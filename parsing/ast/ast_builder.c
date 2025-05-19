@@ -6,7 +6,7 @@
 /*   By: pitran <pitran@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 11:30:21 by pitran            #+#    #+#             */
-/*   Updated: 2025/05/14 16:42:26 by pitran           ###   ########.fr       */
+/*   Updated: 2025/05/14 16:47:02 by pitran           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,18 +61,32 @@ int	is_in_subshell(t_token **token_list, int index)
 
 int	matching_parentheses(t_token **tokens, int start, int end)
 {
-	int	level;
-	int	i;
+	t_token	*start_token;
+	t_token	*end_token; 
+	t_token	*current;
+	int		level;
+	int		i;
 
-	if (tokens[start]->type != PAREN_OPEN || tokens[end]->type != PAREN_CLOSE)
+	start_token = get_token_at_index(tokens, start);
+	end_token = get_token_at_index(tokens, end);
+	
+	if (!start_token || !end_token)
 		return (0);
+		
+	if (start_token->type != PAREN_OPEN || end_token->type != PAREN_CLOSE)
+		return (0);
+	
 	level = 0;
 	i = start;
 	while (i <= end)
 	{
-		if (tokens[i]->type == PAREN_OPEN)
+		current = get_token_at_index(tokens, i);
+		if (!current)
+			return (0);
+			
+		if (current->type == PAREN_OPEN)
 			level++;
-		else if (tokens[i]->type == PAREN_CLOSE)
+		else if (current->type == PAREN_CLOSE)
 		{
 			level--;
 			if (level == 0 && i != end)

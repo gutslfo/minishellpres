@@ -6,7 +6,7 @@
 /*   By: pitran <pitran@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/09 13:15:46 by pitran            #+#    #+#             */
-/*   Updated: 2025/05/14 16:39:55 by pitran           ###   ########.fr       */
+/*   Updated: 2025/05/14 16:46:31 by pitran           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,15 +64,35 @@ t_ast_node	*parse_command_line(t_token **tokens, int start, int end)
 	t_ast_type	node_type;
 	t_ast_node	*node;
 	int			closing;
+	t_token		*start_token;
+	t_token		*op_token;
 
 	if (start > end)
 		return (NULL);
-	if (matching_parentheses(tokens, start, end))
-		return (parse_command_line(tokens, start + 1, end - 1));
+	
+	if (start < 0 || end < 0)
+		return (NULL);
+	
+	// Vérifier matching parens
+	start_token = get_token_at_index(tokens, start);
+	if (start_token && start_token->type == PAREN_OPEN)
+	{
+		t_token *end_token = get_token_at_index(tokens, end);
+		if (end_token && end_token->type == PAREN_CLOSE)
+		{
+			// Vérifier que les parenthèses correspondent bien
+			if (matching_parentheses(tokens, start, end))
+				return (parse_command_line(tokens, start + 1, end - 1));
+		}
+	}
+	
+	// Chercher opérateur de plus basse précédence
 	op_pos = find_lowest_precedence_op(tokens, start, end);
 	if (op_pos == -1)
 	{
-		if (start < end && tokens[start]->type == PAREN_OPEN)
+		// Traiter le cas sous-shell
+		start_token = get_token_at_index(tokens, start);
+		if (start_token && start_token->type == PAREN_OPEN && start < end)
 		{
 			closing = find_matching_parenthesis(tokens, start, end);
 			if (closing > start && closing <= end)
@@ -81,14 +101,21 @@ t_ast_node	*parse_command_line(t_token **tokens, int start, int end)
 		}
 		return (parse_simple_command(tokens, start, end));
 	}
-	if (tokens[op_pos]->type == PIPE)
+	
+	// Créer nœud opérateur
+	op_token = get_token_at_index(tokens, op_pos);
+	if (!op_token)
+		return (NULL);
+		
+	if (op_token->type == PIPE)
 		node_type = AST_PIPE;
-	else if (tokens[op_pos]->type == AND)
+	else if (op_token->type == AND)
 		node_type = AST_AND;
-	else if (tokens[op_pos]->type == OR)
+	else if (op_token->type == OR)
 		node_type = AST_OR;
 	else
 		return (parse_simple_command(tokens, start, end));
+		
 	node = create_operator_node(node_type,
 			parse_command_line(tokens, start, op_pos - 1),
 			parse_command_line(tokens, op_pos + 1, end));
