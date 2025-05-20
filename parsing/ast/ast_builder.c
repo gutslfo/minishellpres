@@ -6,17 +6,49 @@
 /*   By: pitran <pitran@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 11:30:21 by pitran            #+#    #+#             */
-/*   Updated: 2025/05/14 16:47:02 by pitran           ###   ########.fr       */
+/*   Updated: 2025/05/20 14:17:52 by pitran           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../minishell.h"
 
-t_ast_node	*create_ast(t_token **token_list)
+t_ast	*create_ast(t_token **token_list)
 {
+	t_ast	*root;
+	t_ast	*tree;
+	int		token_count;
+
 	if (!token_list || !*token_list)
 		return (NULL);
-	return (parse_command_line(token_list, 0, count_tokens(token_list) - 1));
+	root = create_ast_node(NODE_CMD, NULL);
+	if (!root)
+		return (NULL);
+	root->root = root;
+	root->envp = g_shell.envp;
+	token_count = count_tokens(token_list);
+	tree = parse_command_line(token_list, 0, token_count - 1, root);
+	if (!tree)
+	{
+		free_ast(root);
+		return (NULL);
+	}
+	if (tree->type == NODE_CMD)
+	{
+		tree->root = tree;
+		tree->envp = g_shell.envp;
+		free(root);
+		return (tree);
+	}
+	root->children = (t_ast **)malloc(sizeof(t_ast *) * 2);
+	if (!root->children)
+	{
+		free_ast(tree);
+		free_ast(root);
+		return (NULL);
+	}
+	root->children[0] = tree;
+	root->children[1] = NULL;
+	return (root);
 }
 
 t_token	*get_token_at_index(t_token **token_list, int index)
@@ -26,64 +58,35 @@ t_token	*get_token_at_index(t_token **token_list, int index)
 
 	if (!token_list || !*token_list || index < 0)
 		return (NULL);
-	
 	current = *token_list;
 	i = 0;
-	
 	while (current && i < index)
 	{
 		current = current->next;
 		i++;
 	}
-	
 	return (current);
-}
-
-int	is_in_subshell(t_token **token_list, int index)
-{
-	int		i;
-	int		paren_level;
-	t_token	*current;
-
-	paren_level = 0;
-	i = 0;
-	while (i < index)
-	{
-		current = get_token_at_index(token_list, i);
-		if (current->type == PAREN_OPEN)
-			paren_level++;
-		else if (current->type == PAREN_CLOSE)
-			paren_level--;
-		i++;
-	}
-	return (paren_level > 0);
 }
 
 int	matching_parentheses(t_token **tokens, int start, int end)
 {
-	t_token	*start_token;
-	t_token	*end_token; 
-	t_token	*current;
 	int		level;
 	int		i;
+	t_token	*current;
 
-	start_token = get_token_at_index(tokens, start);
-	end_token = get_token_at_index(tokens, end);
-	
-	if (!start_token || !end_token)
+	current = get_token_at_index(tokens, start);
+	if (!current || current->type != PAREN_OPEN)
 		return (0);
-		
-	if (start_token->type != PAREN_OPEN || end_token->type != PAREN_CLOSE)
+	current = get_token_at_index(tokens, end);
+	if (!current || current->type != PAREN_CLOSE)
 		return (0);
-	
 	level = 0;
 	i = start;
 	while (i <= end)
 	{
 		current = get_token_at_index(tokens, i);
 		if (!current)
-			return (0);
-			
+			break ;
 		if (current->type == PAREN_OPEN)
 			level++;
 		else if (current->type == PAREN_CLOSE)
@@ -99,18 +102,23 @@ int	matching_parentheses(t_token **tokens, int start, int end)
 
 int	find_matching_parenthesis(t_token **tokens, int open_pos, int end)
 {
-	int	level;
-	int	i;
+	int		level;
+	int		i;
+	t_token	*current;
 
-	if (tokens[open_pos]->type != PAREN_OPEN)
+	current = get_token_at_index(tokens, open_pos);
+	if (!current || current->type != PAREN_OPEN)
 		return (-1);
 	level = 1;
 	i = open_pos + 1;
 	while (i <= end)
 	{
-		if (tokens[i]->type == PAREN_OPEN)
+		current = get_token_at_index(tokens, i);
+		if (!current)
+			break ;
+		if (current->type == PAREN_OPEN)
 			level++;
-		else if (tokens[i]->type == PAREN_CLOSE)
+		else if (current->type == PAREN_CLOSE)
 		{
 			level--;
 			if (level == 0)

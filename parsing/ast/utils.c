@@ -6,30 +6,33 @@
 /*   By: pitran <pitran@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/09 14:40:29 by pitran            #+#    #+#             */
-/*   Updated: 2025/05/14 15:19:25 by pitran           ###   ########.fr       */
+/*   Updated: 2025/05/20 14:19:06 by pitran           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../minishell.h"
 
-void	free_ast_node(t_ast_node *node)
+void	free_ast(t_ast *node)
 {
+	int	i;
+
 	if (!node)
 		return ;
-	if (node->type == AST_COMMAND)
+	if (node->cmd.args)
+		free_string_array(node->cmd.args);
+	if (node->cmd.path)
+		free(node->cmd.path);
+	if (node->file)
+		free(node->file);
+	if (node->children)
 	{
-		free_string_array(node->data.command.args);
-		free_redirections(node->data.command.redirections);
-	}
-	else if (node->type == AST_PIPE || node->type == AST_AND
-		|| node->type == AST_OR)
-	{
-		free_ast_node(node->data.binary.left);
-		free_ast_node(node->data.binary.right);
-	}
-	else if (node->type == AST_SUBSHELL)
-	{
-		free_ast_node(node->data.subshell.child);
+		i = 0;
+		while (node->children[i])
+		{
+			free_ast(node->children[i]);
+			i++;
+		}
+		free(node->children);
 	}
 	free(node);
 }
@@ -49,81 +52,84 @@ void	free_string_array(char **array)
 	free(array);
 }
 
-void	free_redirections(t_redirection *redirections)
+static void	print_ast_type(t_ast *node)
 {
-	t_redirection	*current;
-	t_redirection	*next;
-
-	current = redirections;
-	while (current)
+	if (node->type == NODE_CMD)
 	{
-		next = current->next;
-		free(current->file);
-		free(current);
-		current = next;
+		printf("COMMAND:");
+		if (node->cmd.args)
+		{
+			int j = 0;
+			while (node->cmd.args[j])
+			{
+				printf(" %s", node->cmd.args[j]);
+				j++;
+			}
+		}
+		printf("\n");
 	}
+	else if (node->type == NODE_PIPE)
+		printf("PIPE |\n");
+	else if (node->type == NODE_AND_IF)
+		printf("AND &&\n");
+	else if (node->type == NODE_OR_IF)
+		printf("OR ||\n");
+	else if (node->type == NODE_SUBSHELL)
+		printf("SUBSHELL ()\n");
+	else if (node->type == NODE_REDIR_IN)
+		printf("REDIRECTION < %s\n", node->file ? node->file : "NULL");
+	else if (node->type == NODE_REDIR_OUT)
+		printf("REDIRECTION > %s\n", node->file ? node->file : "NULL");
+	else if (node->type == NODE_REDIR_APPEND)
+		printf("REDIRECTION >> %s\n", node->file ? node->file : "NULL");
+	else if (node->type == NODE_HEREDOC)
+		printf("HEREDOC << %s\n", node->file ? node->file : "NULL");
 }
 
-void	print_ast(t_ast_node *node, int depth)
+void	print_ast(t_ast *node, int depth)
 {
 	int	i;
-	int	j;
 
 	if (!node)
 		return ;
-	for (i = 0; i < depth; i++)
+	i = 0;
+	while (i < depth)
+	{
 		printf("  ");
-	if (node->type == AST_COMMAND)
+		i++;
+	}
+	print_ast_type(node);
+	if (node->children)
 	{
-		printf("COMMAND: ");
-		j = 0;
-		while (node->data.command.args && node->data.command.args[j])
+		i = 0;
+		while (node->children[i])
 		{
-			printf("%s ", node->data.command.args[j]);
-			j++;
+			print_ast(node->children[i], depth + 1);
+			i++;
 		}
-		printf("\n");
-		print_redirections(node->data.command.redirections, depth + 1);
-	}
-	else if (node->type == AST_PIPE)
-		printf("PIPE |\n");
-	else if (node->type == AST_AND)
-		printf("AND &&\n");
-	else if (node->type == AST_OR)
-		printf("OR ||\n");
-	else if (node->type == AST_SUBSHELL)
-		printf("SUBSHELL ()\n");
-	if (node->type == AST_PIPE || node->type == AST_AND || node->type == AST_OR)
-	{
-		print_ast(node->data.binary.left, depth + 1);
-		print_ast(node->data.binary.right, depth + 1);
-	}
-	else if (node->type == AST_SUBSHELL)
-	{
-		print_ast(node->data.subshell.child, depth + 1);
 	}
 }
 
-void	print_redirections(t_redirection *redirections, int depth)
+char	*ft_strdup(const char *s)
 {
-	t_redirection	*current;
-	int				i;
+	char	*dup;
+	int		len;
+	int		i;
 
-	current = redirections;
-	while (current)
+	if (!s)
+		return (NULL);
+	len = 0;
+	while (s[len])
+		len++;
+	dup = (char *)malloc(sizeof(char) * (len + 1));
+	if (!dup)
+		return (NULL);
+	i = 0;
+	while (i < len)
 	{
-		for (i = 0; i < depth; i++)
-			printf("  ");
-		printf("REDIRECTION: ");
-		if (current->type == REDIR_TYPE_IN)
-			printf("< ");
-		else if (current->type == REDIR_TYPE_OUT)
-			printf("> ");
-		else if (current->type == REDIR_TYPE_APPEND)
-			printf(">> ");
-		else if (current->type == REDIR_TYPE_HEREDOC)
-			printf("<< ");
-		printf("%s\n", current->file);
-		current = current->next;
+		dup[i] = s[i];
+		i++;
 	}
+	dup[i] = '\0';
+	return (dup);
 }

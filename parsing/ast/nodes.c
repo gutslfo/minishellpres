@@ -6,77 +6,88 @@
 /*   By: pitran <pitran@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/09 15:34:09 by pitran            #+#    #+#             */
-/*   Updated: 2025/05/14 15:19:02 by pitran           ###   ########.fr       */
+/*   Updated: 2025/05/20 14:17:35 by pitran           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../minishell.h"
 
-t_ast_node	*create_command_node(char **args)
+t_ast	*create_ast_node(t_node_type type, t_ast *root)
 {
-	t_ast_node	*node;
+	t_ast	*node;
 
-	node = (t_ast_node *)malloc(sizeof(t_ast_node));
-	if (!node)
-		return (NULL);
-	node->type = AST_COMMAND;
-	node->data.command.args = args;
-	node->data.command.redirections = NULL;
-	return (node);
-}
-
-t_ast_node	*create_operator_node(t_ast_type type, t_ast_node *left,
-		t_ast_node *right)
-{
-	t_ast_node	*node;
-
-	node = (t_ast_node *)malloc(sizeof(t_ast_node));
+	node = (t_ast *)malloc(sizeof(t_ast));
 	if (!node)
 		return (NULL);
 	node->type = type;
-	node->data.binary.left = left;
-	node->data.binary.right = right;
+	node->file = NULL;
+	node->children = NULL;
+	node->root = root;
+	node->envp = NULL;
+	node->paths = NULL;
+	node->cmd.args = NULL;
+	node->cmd.path = NULL;
+	node->cmd.fd_in = STDIN_FILENO;
+	node->cmd.fd_out = STDOUT_FILENO;
 	return (node);
 }
 
-t_ast_node	*create_subshell_node(t_ast_node *child)
+t_ast	*create_command_node(char **args, t_ast *root)
 {
-	t_ast_node	*node;
+	t_ast	*node;
 
-	node = (t_ast_node *)malloc(sizeof(t_ast_node));
+	node = create_ast_node(NODE_CMD, root);
 	if (!node)
 		return (NULL);
-	node->type = AST_SUBSHELL;
-	node->data.subshell.child = child;
+	node->cmd.args = args;
 	return (node);
 }
 
-t_redirection	*create_redirection(t_redir_type type, char *file)
+t_ast	*create_operator_node(t_node_type type, t_ast *left, t_ast *right,
+	t_ast *root)
 {
-	t_redirection	*redir;
+	t_ast	*node;
 
-	redir = (t_redirection *)malloc(sizeof(t_redirection));
-	if (!redir)
+	node = create_ast_node(type, root);
+	if (!node)
 		return (NULL);
-	redir->type = type;
-	redir->file = file;
-	redir->next = NULL;
-	return (redir);
+	node->children = (t_ast **)malloc(sizeof(t_ast *) * 3);
+	if (!node->children)
+	{
+		free(node);
+		return (NULL);
+	}
+	node->children[0] = left;
+	node->children[1] = right;
+	node->children[2] = NULL;
+	return (node);
 }
 
-void	add_redirection(t_ast_node *cmd_node, t_redirection *redir)
+t_ast	*create_subshell_node(t_ast *child, t_ast *root)
 {
-	t_redirection	*current;
+	t_ast	*node;
 
-	if (!cmd_node || !redir || cmd_node->type != AST_COMMAND)
-		return ;
-	if (!cmd_node->data.command.redirections)
+	node = create_ast_node(NODE_SUBSHELL, root);
+	if (!node)
+		return (NULL);
+	node->children = (t_ast **)malloc(sizeof(t_ast *) * 2);
+	if (!node->children)
 	{
-		cmd_node->data.command.redirections = redir;
-		return ;
+		free(node);
+		return (NULL);
 	}
-	current = cmd_node->data.command.redirections;
-	while (current->next)
-		current = current->next;
-	current->next = redir;
+	node->children[0] = child;
+	node->children[1] = NULL;
+	return (node);
+}
+
+t_ast	*create_redirection_node(t_node_type type, char *file, t_ast *root)
+{
+	t_ast	*node;
+
+	node = create_ast_node(type, root);
+	if (!node)
+		return (NULL);
+	node->file = file;
+	return (node);
 }

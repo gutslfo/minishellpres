@@ -6,7 +6,7 @@
 /*   By: pitran <pitran@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 15:22:05 by pitran            #+#    #+#             */
-/*   Updated: 2025/05/14 15:19:38 by pitran           ###   ########.fr       */
+/*   Updated: 2025/05/20 14:20:10 by pitran           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,9 @@
 
 int	parse_input(char *command)
 {
-	t_token		**token_list;
-	t_ast_node	*ast_root;
-	int			syntax_valid;
+	t_token	**token_list;
+	t_ast	*ast_root;
+	int		syntax_valid;
 
 	if (!command)
 		return (1);
@@ -38,7 +38,7 @@ int	parse_input(char *command)
 	}
 	printf("\n--- AST Structure ---\n");
 	print_ast(ast_root, 0);
-	free_ast_node(ast_root);
+	free_ast(ast_root);
 	free_token_list(token_list);
 	return (0);
 }
@@ -54,6 +54,7 @@ void	print_token_list(t_token **token_list)
 		printf("No tokens to display\n");
 		return ;
 	}
+	printf("--- Token List ---\n");
 	current = *token_list;
 	while (current)
 	{

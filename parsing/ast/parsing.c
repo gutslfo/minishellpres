@@ -6,7 +6,7 @@
 /*   By: pitran <pitran@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/09 13:15:46 by pitran            #+#    #+#             */
-/*   Updated: 2025/05/14 16:46:31 by pitran           ###   ########.fr       */
+/*   Updated: 2025/05/20 14:18:13 by pitran           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,17 @@ int	get_operator_precedence(t_token_type type)
 	else if (type == PIPE)
 		return (2);
 	return (3);
+}
+
+t_node_type	token_type_to_node_type(t_token_type type)
+{
+	if (type == PIPE)
+		return (NODE_PIPE);
+	else if (type == AND)
+		return (NODE_AND_IF);
+	else if (type == OR)
+		return (NODE_OR_IF);
+	return (NODE_CMD);
 }
 
 int	find_lowest_precedence_op(t_token **tokens, int start, int end)
@@ -38,7 +49,7 @@ int	find_lowest_precedence_op(t_token **tokens, int start, int end)
 	{
 		current = get_token_at_index(tokens, i);
 		if (!current)
-			break;
+			break ;
 		if (current->type == PAREN_OPEN)
 			paren_level++;
 		else if (current->type == PAREN_CLOSE)
@@ -58,66 +69,35 @@ int	find_lowest_precedence_op(t_token **tokens, int start, int end)
 	return (result);
 }
 
-t_ast_node	*parse_command_line(t_token **tokens, int start, int end)
+t_ast	*parse_command_line(t_token **tokens, int start, int end, t_ast *root)
 {
 	int			op_pos;
-	t_ast_type	node_type;
-	t_ast_node	*node;
+	t_node_type	node_type;
 	int			closing;
-	t_token		*start_token;
-	t_token		*op_token;
+	t_token		*current;
 
 	if (start > end)
 		return (NULL);
-	
-	if (start < 0 || end < 0)
-		return (NULL);
-	
-	// Vérifier matching parens
-	start_token = get_token_at_index(tokens, start);
-	if (start_token && start_token->type == PAREN_OPEN)
-	{
-		t_token *end_token = get_token_at_index(tokens, end);
-		if (end_token && end_token->type == PAREN_CLOSE)
-		{
-			// Vérifier que les parenthèses correspondent bien
-			if (matching_parentheses(tokens, start, end))
-				return (parse_command_line(tokens, start + 1, end - 1));
-		}
-	}
-	
-	// Chercher opérateur de plus basse précédence
+	if (matching_parentheses(tokens, start, end))
+		return (parse_command_line(tokens, start + 1, end - 1, root));
 	op_pos = find_lowest_precedence_op(tokens, start, end);
 	if (op_pos == -1)
 	{
-		// Traiter le cas sous-shell
-		start_token = get_token_at_index(tokens, start);
-		if (start_token && start_token->type == PAREN_OPEN && start < end)
+		current = get_token_at_index(tokens, start);
+		if (start < end && current && current->type == PAREN_OPEN)
 		{
 			closing = find_matching_parenthesis(tokens, start, end);
 			if (closing > start && closing <= end)
 				return (create_subshell_node(parse_command_line(tokens,
-							start + 1, closing - 1)));
+							start + 1, closing - 1, root), root));
 		}
-		return (parse_simple_command(tokens, start, end));
+		return (parse_simple_command(tokens, start, end, root));
 	}
-	
-	// Créer nœud opérateur
-	op_token = get_token_at_index(tokens, op_pos);
-	if (!op_token)
-		return (NULL);
-		
-	if (op_token->type == PIPE)
-		node_type = AST_PIPE;
-	else if (op_token->type == AND)
-		node_type = AST_AND;
-	else if (op_token->type == OR)
-		node_type = AST_OR;
-	else
-		return (parse_simple_command(tokens, start, end));
-		
-	node = create_operator_node(node_type,
-			parse_command_line(tokens, start, op_pos - 1),
-			parse_command_line(tokens, op_pos + 1, end));
-	return (node);
+	current = get_token_at_index(tokens, op_pos);
+	if (!current)
+		return (parse_simple_command(tokens, start, end, root));
+	node_type = token_type_to_node_type(current->type);
+	return (create_operator_node(node_type,
+			parse_command_line(tokens, start, op_pos - 1, root),
+			parse_command_line(tokens, op_pos + 1, end, root), root));
 }

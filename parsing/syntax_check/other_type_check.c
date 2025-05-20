@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   quote_check.c                                      :+:      :+:    :+:   */
+/*   other_type_check.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: pitran <pitran@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 15:51:19 by pitran            #+#    #+#             */
-/*   Updated: 2025/03/26 13:57:53 by pitran           ###   ########.fr       */
+/*   Updated: 2025/05/19 15:16:33 by pitran           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,9 +58,12 @@ int	operator_syntax_is_valid(t_token **token_list)
 	{
 		if (current->type == PIPE || current->type == AND || current->type == OR)
 		{
-			if (!current->prev || !current->next || current->prev->type != WORD || current->next->type != WORD)
+			if (!current->prev || !current->next)
+				return (0);			
+			if (current->prev->type != WORD && current->prev->type != PAREN_CLOSE)
 				return (0);
-				
+			if (current->next->type != WORD && current->next->type != PAREN_OPEN)
+				return (0);
 		}
 		current = current->next;
 	}
