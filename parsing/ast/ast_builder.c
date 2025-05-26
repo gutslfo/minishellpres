@@ -6,12 +6,17 @@
 /*   By: pitran <pitran@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 11:30:21 by pitran            #+#    #+#             */
-/*   Updated: 2025/05/26 15:07:13 by pitran           ###   ########.fr       */
+/*   Updated: 2025/05/26 16:26:41 by pitran           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../minishell.h"
 
+/*
+** Crée l'AST principal à partir de la liste de tokens.
+** Gère l'allocation du noeud racine, l'appel au parsing, et l'organisation
+** de l'arbre selon le type de noeud retourné.
+*/
 t_ast	*create_ast(t_token **token_list, t_shell_data *shell )
 {
 	t_ast	*root;
@@ -51,6 +56,9 @@ t_ast	*create_ast(t_token **token_list, t_shell_data *shell )
 	return (root);
 }
 
+/*
+** Récupère le token à l'index donné dans la liste chaînée de tokens.
+*/
 t_token	*get_token_at_index(t_token **token_list, int index)
 {
 	t_token	*current;
@@ -68,6 +76,10 @@ t_token	*get_token_at_index(t_token **token_list, int index)
 	return (current);
 }
 
+/*
+** Vérifie si la séquence de tokens entre start et end est bien entourée
+** par des parenthèses appariées et correctement imbriquées.
+*/
 int	matching_parentheses(t_token **tokens, int start, int end)
 {
 	int		level;
@@ -100,6 +112,11 @@ int	matching_parentheses(t_token **tokens, int start, int end)
 	return (level == 0);
 }
 
+/*
+** Trouve l'index de la parenthèse fermante correspondant à la parenthèse
+** ouvrante située à open_pos dans la liste de tokens.
+** Retourne l'index de la parenthèse fermante ou -1 si non trouvée.
+*/
 int	find_matching_parenthesis(t_token **tokens, int open_pos, int end)
 {
 	int		level;
@@ -108,7 +125,7 @@ int	find_matching_parenthesis(t_token **tokens, int open_pos, int end)
 
 	current = get_token_at_index(tokens, open_pos);
 	if (!current || current->type != PAREN_OPEN)
-		return (-1);
+		return (0);
 	level = 1;
 	i = open_pos + 1;
 	while (i <= end)
@@ -126,5 +143,5 @@ int	find_matching_parenthesis(t_token **tokens, int open_pos, int end)
 		}
 		i++;
 	}
-	return (-1);
+	return (0);
 }

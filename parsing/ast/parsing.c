@@ -6,7 +6,7 @@
 /*   By: pitran <pitran@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/09 13:15:46 by pitran            #+#    #+#             */
-/*   Updated: 2025/05/20 14:18:13 by pitran           ###   ########.fr       */
+/*   Updated: 2025/05/26 16:53:01 by pitran           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,7 +95,10 @@ t_ast	*parse_command_line(t_token **tokens, int start, int end, t_ast *root)
 	}
 	current = get_token_at_index(tokens, op_pos);
 	if (!current)
-		return (parse_simple_command(tokens, start, end, root));
+	{
+    fprintf(stderr, "Error: Invalid operator position %d\n", op_pos);
+    return (NULL);
+	}// Checker l'implementation 
 	node_type = token_type_to_node_type(current->type);
 	return (create_operator_node(node_type,
 			parse_command_line(tokens, start, op_pos - 1, root),
