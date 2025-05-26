@@ -6,7 +6,7 @@
 /*   By: pitran <pitran@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 17:20:14 by pitran            #+#    #+#             */
-/*   Updated: 2025/05/20 14:17:12 by pitran           ###   ########.fr       */
+/*   Updated: 2025/05/26 15:00:17 by pitran           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,7 +118,7 @@ int			quote_syntax_is_valid(t_token **token_list);
 int			redir_syntax_is_valid(t_token **token_list);
 int			operator_syntax_is_valid(t_token **token_list);
 int			syntax_is_valid(t_token **token_list);
-t_ast		*create_ast(t_token **token_list);
+t_ast		*create_ast(t_token **token_list, t_shell_data *shell);
 t_ast		*parse_command_line(t_token **tokens, int start, int end,
 				t_ast *root);
 t_ast		*parse_simple_command(t_token **tokens, int start, int end,
@@ -147,7 +147,7 @@ t_ast		**extract_redirections(t_token **tokens, int start, int end,
 void		free_ast(t_ast *node);
 void		free_string_array(char **array);
 void		print_ast(t_ast *node, int depth);
-int			parse_input(char *command);
+int			parse_input(char *command, t_shell_data *shell); 
 void		print_token_list(t_token **token_list);
 char		*ft_strdup(const char *s);
 void		*ft_memset(void *s, int c, size_t n);

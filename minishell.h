@@ -6,7 +6,7 @@
 /*   By: pitran <pitran@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/20 10:00:00 by pitran            #+#    #+#             */
-/*   Updated: 2025/05/20 14:20:45 by pitran           ###   ########.fr       */
+/*   Updated: 2025/05/26 14:58:18 by pitran           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,5 @@ typedef struct s_shell_data
 	int		exit_status;
 }	t_shell_data;
 
-extern t_shell_data	g_shell;
 
 #endif

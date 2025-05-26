@@ -6,13 +6,13 @@
 /*   By: pitran <pitran@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 11:30:21 by pitran            #+#    #+#             */
-/*   Updated: 2025/05/20 14:17:52 by pitran           ###   ########.fr       */
+/*   Updated: 2025/05/26 15:07:13 by pitran           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../minishell.h"
 
-t_ast	*create_ast(t_token **token_list)
+t_ast	*create_ast(t_token **token_list, t_shell_data *shell )
 {
 	t_ast	*root;
 	t_ast	*tree;
@@ -24,7 +24,7 @@ t_ast	*create_ast(t_token **token_list)
 	if (!root)
 		return (NULL);
 	root->root = root;
-	root->envp = g_shell.envp;
+	root->envp = shell->envp;
 	token_count = count_tokens(token_list);
 	tree = parse_command_line(token_list, 0, token_count - 1, root);
 	if (!tree)
@@ -35,7 +35,7 @@ t_ast	*create_ast(t_token **token_list)
 	if (tree->type == NODE_CMD)
 	{
 		tree->root = tree;
-		tree->envp = g_shell.envp;
+		tree->envp = shell->envp;
 		free(root);
 		return (tree);
 	}
